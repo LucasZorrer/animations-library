@@ -1,11 +1,25 @@
+let canvas;
+let cpx;
+let flowField;
+let flowFieldAnimation;
+
 window.onload = function () {
-  const canvas = document.getElementById("canvas1");
-  const cpx = canvas.getContext("2d");
+  canvas = document.getElementById("canvas1");
+  cpx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const flowField = new FlowFieldEffect(cpx, canvas.width, canvas.height);
+  flowField = new FlowFieldEffect(cpx, canvas.width, canvas.height);
+  flowField.animate();
 };
+
+window.addEventListener("resize", function () {
+  cancelAnimationFrame(flowFieldAnimation);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  flowField = new FlowFieldEffect(cpx, canvas.width, canvas.height);
+  flowField.animate();
+});
 
 class FlowFieldEffect {
   //private class fields
@@ -16,16 +30,21 @@ class FlowFieldEffect {
     this.#ctx = ctx;
     this.#width = width;
     this.#height = height;
-    console.log("loaded");
     this.#ctx.strokeStyle = "white";
-    this.#draw(100, 100);
   }
 
   #draw(x, y) {
-    const length = 400;
+    const length = 300;
     this.#ctx.beginPath();
     this.#ctx.moveTo(x, y);
     this.#ctx.lineTo(x + length, y + length);
     this.#ctx.stroke();
+  }
+
+  animate() {
+    this.#ctx.clearRect(0, 0, this.#width, this.#height);
+    this.#draw(this.#width / 2, this.#height / 2);
+    console.log("animating");
+    flowFieldAnimation = requestAnimationFrame(this.animate.bind(this));
   }
 }
